@@ -32,7 +32,7 @@ while True:
         score+=1
       else:
         if loses>0:
-          print("You lost again 🤕 but don't give up keep trying!😤\n")
+          print("Opps! You lost again 🤕 but don't give up keep trying!😤\n")
         else:
             print("You lost 😕\n")
         loses+=1
