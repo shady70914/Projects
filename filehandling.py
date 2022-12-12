@@ -1,0 +1,10 @@
+#file handling
+f =open('K22MB1','w')
+f.write('My name is abc')
+f.close()
+f=open('K22Mb.txt','w')
+r =int(input('Enter roll number'))
+n= input('Enter name')
+f.write(str(r))
+f.write(n)
+f.close()
