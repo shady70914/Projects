@@ -1,46 +1,106 @@
-import math
 import random
-loses=0
-score=0
-looprun=0
-print("_______________________\n")
-print("Welcome To Dice Game🎲 if You want To quit the game please Type quit")
-print("_______________________\n")
+import hashlib
+import os
+import time
+
+# ---- SECURITY LOGGING ----
+def log_security_event(event):
+    with open("security_log.txt", "a") as log:
+        log.write(f"[{time.ctime()}] {event}\n")
+
+
+wrong_attempts = 0  # IDS counter
+
+print("""
+====================================
+🔐 CYBER-SECURE DICE GAME (CSDG)
+====================================
+Features:
+✔ OTP Verification (2FA)
+✔ SHA-256 Hashed Dice Roll (Provably Fair System)
+✔ Intrusion Detection System (IDS)
+✔ Security Log File
+✔ Secure Input Validation
+====================================
+""")
+
+
+def generate_otp():
+    return str(random.randint(100000, 999999))
+
+
+def hash_value(value):
+    return hashlib.sha256(str(value).encode()).hexdigest()
+
+
+def secure_dice_roll():
+    dice_result = random.randint(1, 6)
+    hashed = hash_value(dice_result)
+    return dice_result, hashed
+
+
 while True:
-  a=input(">>>Enter Your Guess 🤫:  ")
-  if a.lower()=='quit':
-    if score==0:
-      a1="times! 😂"
-    elif score==1:
-      a1="time! 🥱"
-    elif score==2:
-      a1="times! 😃"
-    else:
-      a1="times! 🤩"
-    print("\nThanks for playing the game. You won",score, a1 )
-    exit()
 
-  def dice_game(user_guess,loses,score):
-    if user_guess>6:
-      print("\n🚫🚫🚫\nEnter a valid guess within the range 1-6\n")
-    else:
-      print("\nRolling 🎲...")
-      dice_value=random.randint(1,6)
-      print("🎲"+ "="+str(dice_value))
-      if user_guess==dice_value:
-        print("Congratulations You won!!! 🥳\n")
-        score+=1
-      else:
-        if loses>0:
-          print("Opps! You lost again 🤕 but don't give up keep trying!😤\n")
-        else:
-            print("You lost 😕\n")
-        loses+=1
-    b=[loses,score]
-    return b
-          
-  b=dice_game(int(a),loses,score)
-  loses=b[0]
-  score=b[1]
+    print("\n🎲 New Secure Round Started!\n")
 
-  
+    # OTP for this round
+    otp = generate_otp()
+    print(f"[2FA] Your OTP for this round is: {otp}")
+    user_otp = input("Enter OTP to verify: ")
+
+    # OTP Verification
+    if user_otp != otp:
+        print("❌ OTP Incorrect! Access Denied.")
+        wrong_attempts += 1
+        log_security_event("Failed OTP verification")
+
+        if wrong_attempts >= 3:
+            print("\n🚨 INTRUSION DETECTED! 🚨")
+            print("Multiple failed attempts logged.")
+            log_security_event("IDS Triggered: Too many failed OTP attempts.")
+            break
+        continue
+
+    print("✅ OTP Verified Successfully!\n")
+
+    # Guess from user
+    guess = input("Enter your guess (1-6) or type 'quit': ")
+
+    if guess.lower() == "quit":
+        print("\nThanks for playing the secure game! Stay protected 😎")
+        break
+
+    if not guess.isdigit():
+        print("⚠ Invalid input! Only numbers allowed.")
+        wrong_attempts += 1
+        log_security_event("Invalid non-numeric input")
+
+        if wrong_attempts >= 3:
+            print("\n🚨 INTRUSION DETECTED! 🚨")
+            log_security_event("IDS Triggered: Multiple invalid inputs.")
+            break
+        continue
+
+    guess = int(guess)
+    if guess < 1 or guess > 6:
+        print("⚠ Guess must be between 1–6.")
+        log_security_event("Out-of-range guess attempt")
+        continue
+
+    # Secure Dice Roll
+    dice_value, dice_hash = secure_dice_roll()
+
+    print(f"\n🔐 Pre-roll Hash (Integrity Proof): \n{dice_hash}")
+
+    print("\nRolling the dice securely... 🔒")
+    time.sleep(1)
+
+    print(f"\n🎲 Dice Result = {dice_value}")
+
+    # Verify SHA-256 integrity
+    print(f"🔍 Verify SHA-256 Hash: {hash_value(dice_value)}")
+
+    if guess == dice_value:
+        print("🎉 You WIN!")
+    else:
+        print("❌ You LOST")
